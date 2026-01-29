@@ -417,7 +417,8 @@ class ProductionService(BaseService):
             
             connection_map = {}
             for conn in connections:
-                source_id = str(conn.source_id) if hasattr(conn, 'source_id') else str(conn.get('source_id'))
+                # Beanie models use attributes, but check for dict-like access just in case
+                source_id = str(conn.source) if hasattr(conn, 'source') else str(conn.get('source'))
                 if source_id not in connection_map:
                     connection_map[source_id] = []
                 connection_map[source_id].append(conn)

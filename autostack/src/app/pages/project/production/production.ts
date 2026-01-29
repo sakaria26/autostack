@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { ProjectFacade } from '../../../state/project/project.facade';
 import { Subscription } from 'rxjs';
+import { ProjectFacade } from '../../../state/project/project.facade';
 
 @Component({
   selector: 'app-production',
@@ -53,6 +53,12 @@ export class Production {
   loadProductionEnvironment() {
     if (this.projectId) {
       this.projectFacade.loadProductionEnvironment(this.projectId);
+    }
+  }
+
+  generateComposeFile() {
+    if (this.projectId) {
+      this.projectFacade.generateProductionConfig(this.projectId);
     }
   }
 

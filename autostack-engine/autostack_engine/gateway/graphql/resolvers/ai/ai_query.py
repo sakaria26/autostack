@@ -33,12 +33,20 @@ class DeleteChatResponse:
 
 
 @strawberry.type
-class CreateProjectResponse:
-    """Response type for project creation"""
-    success: bool
-    project_id: Optional[str]
-    error: Optional[str]
-   
+class JobCreated:
+    """Type representing a created AI job"""
+    job_id: str
+    message: str
+
+@strawberry.type
+class JobResult:
+    """Type representing the status and result of an AI job"""
+    id: str
+    status: str
+    result: Optional[JSON] = None # type: ignore
+    error: Optional[str] = None
+    created_at: str
+    completed_at: Optional[str] = None
 
 @strawberry.type
 class UnsupportedItem:
@@ -69,7 +77,31 @@ class GenerateArchitectureResponse:
     
 @strawberry.type
 class ModelQuery:
-   
+    
+    @strawberry.field
+    async def get_job(self, info: strawberry.Info, job_id: str) -> Optional[JobResult]:
+        """
+        Get the current status and result of an AI job.
+        """
+        operation_store = info.context["operation_store"]
+        key = f"operation:{job_id}"
+        
+        # This is a bit of a hack to reuse the RedisOperationStore for AI "jobs"
+        # We'll use the same key prefix to keep things unified.
+        data = await operation_store.redis.hgetall(key)
+        
+        if not data:
+            return None
+            
+        return JobResult(
+            id=job_id,
+            status=data[b'status'].decode() if b'status' in data else "PENDING",
+            result=json.loads(data[b'result'].decode()) if b'result' in data and data[b'result'] else None,
+            error=data[b'error'].decode() if b'error' in data and data[b'error'] else None,
+            created_at=data[b'created_at'].decode() if b'created_at' in data else datetime.now().isoformat(),
+            completed_at=data[b'updated_at'].decode() if b'updated_at' in data else None
+        )
+
     @strawberry.field
     async def generate_architecture(
         self,

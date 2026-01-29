@@ -1,9 +1,9 @@
-import { props, createActionGroup, emptyProps } from '@ngrx/store';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import {
-  ProjectResult,
-  ProjectArchitecture,
   GitInfo,
   ProductionEnvironment,
+  ProjectArchitecture,
+  ProjectResult,
 } from '../../services/project/project-service';
 
 export const ProjectActions = createActionGroup({
@@ -47,6 +47,10 @@ export const ProjectActions = createActionGroup({
       productionEnvironment: ProductionEnvironment;
     }>(),
     'Load Production Environment Failure': props<{ error: string }>(),
+
+    'Generate Production Config': props<{ projectId: string }>(),
+    'Generate Production Config Success': props<{ projectId: string; message: string; composePath: string }>(),
+    'Generate Production Config Failure': props<{ error: string }>(),
 
     // Set Current Project (for navigation/selection)
     'Set Current Project': props<{ projectId: string }>(),

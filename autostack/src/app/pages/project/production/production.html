@@ -200,7 +200,7 @@
         <h3 class="mt-2 text-sm font-medium">Production environment not configured</h3>
         <p class="mt-1 text-sm">No docker-compose configuration found for this project.</p>
         <div class="mt-6">
-            <button type="button"
+            <button type="button" (click)="generateComposeFile()"
                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Generate Compose File
             </button>

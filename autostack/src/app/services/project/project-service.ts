@@ -496,6 +496,39 @@ export class ProjectService {
       })
       .pipe(map((result) => result.data?.fetchProductionEnvironment!));
   }
+
+  generateProductionConfig(projectId: string): Observable<ProductionEnvironmentResponse> {
+    const GENERATE_PRODUCTION_CONFIG = gql`
+      mutation GenerateProductionConfig($projectId: String!) {
+        generateProductionConfig(project_id: $projectId) {
+          success
+          compose_path
+          error
+          message
+        }
+      }
+    `;
+
+    return this.apollo
+      .mutate<{ generateProductionConfig: any }>({
+        mutation: GENERATE_PRODUCTION_CONFIG,
+        variables: { projectId },
+      })
+      .pipe(
+        map((result) => {
+          const response = result.data?.generateProductionConfig;
+          return {
+            success: response.success,
+            data: {
+              compose_file: response.compose_path,
+              // Other fields will be reloaded via loadProductionEnvironment effect
+            } as any,
+            error: response.error,
+            message: response.message
+          };
+        })
+      );
+  }
   /**
    * Generate C4 Context Diagram
    */
@@ -577,8 +610,7 @@ export class ProjectService {
       const technology = techInfo || comp.technology || comp.type;
 
       lines.push(
-        `    Container(${comp.component_id}, "${
-          comp.name
+        `    Container(${comp.component_id}, "${comp.name
         }", "${technology}", "${comp.framework || ''}")`
       );
     }
@@ -625,9 +657,8 @@ export class ProjectService {
     if (component.technology) {
       const tech = technologies.find((t) => t.name === component.technology);
       if (tech) {
-        return `${tech.name} ${
-          tech.version !== 'latest' ? tech.version : ''
-        }`.trim();
+        return `${tech.name} ${tech.version !== 'latest' ? tech.version : ''
+          }`.trim();
       }
       return component.technology;
     }

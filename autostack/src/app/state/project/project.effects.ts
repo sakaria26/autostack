@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { createEffect, Actions, ofType } from '@ngrx/effects';
 import { Router } from '@angular/router';
-import { switchMap, map, catchError, tap } from 'rxjs/operators';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 
-import { ProjectActions } from './project.actions';
 import { ProjectService } from '../../services/project/project-service';
+import { ProjectActions } from './project.actions';
 
 @Injectable()
 export class ProjectEffects {
@@ -284,6 +284,43 @@ export class ProjectEffects {
           )
         )
       )
+    )
+  );
+
+  generateProductionConfig$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProjectActions.generateProductionConfig),
+      switchMap(({ projectId }) =>
+        this.projectService.generateProductionConfig(projectId).pipe(
+          map((result) => {
+            if (result.success) {
+              return ProjectActions.generateProductionConfigSuccess({
+                projectId,
+                message: result.message || 'Config generated successfully',
+                composePath: result.data?.compose_file || ''
+              });
+            } else {
+              return ProjectActions.generateProductionConfigFailure({
+                error: result.error || 'Failed to generate config',
+              });
+            }
+          }),
+          catchError((error) =>
+            of(
+              ProjectActions.generateProductionConfigFailure({
+                error: error.message || 'Failed to generate config',
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
+  reloadAfterGeneration$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProjectActions.generateProductionConfigSuccess),
+      map(({ projectId }) => ProjectActions.loadProductionEnvironment({ projectId }))
     )
   );
 }

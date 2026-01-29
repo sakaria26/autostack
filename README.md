@@ -19,11 +19,25 @@ A prototype for creating the necessary infrastructure for developing and deployi
 - [Python](https://www.python.org/downloads/)
 - [Poetry](https://python-poetry.org/docs/#installation/)
 
-## Building
-
 Run the following commands to setup the project locally on your machine:
-
-### 1. Backend
+ 
+### ⚡ Simplified Setup (Recommended)
+ 
+We now provide a unified Python CLI to handle installation, diagnostics, and running the entire stack automatically.
+ 
+```bash
+python3 autostack.py
+```
+ 
+**Features:**
+- **Automated setup**: Detects and installs missing dependencies for both backend and frontend.
+- **Smart Launch**: Starts Docker services, the backend gateway, and the frontend development server in one command.
+- **Self-Healing**: Detects port conflicts and provides diagnostics for Docker and MongoDB.
+- **Maintenance**: built-in Docker pruning and system cleanup.
+ 
+---
+ 
+### 🛠️ Manual Backend Setup
 
 Open a terminal and navigate to the backend directory:
 

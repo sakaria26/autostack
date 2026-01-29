@@ -113,6 +113,13 @@ class TechnologyService(BaseService):
         try:
             project_directory = os.path.abspath(project_directory)
             
+            # Check if devbox is available
+            try:
+                subprocess.run(["devbox", "version"], capture_output=True, check=True)
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                self.log_warning("devbox command not found. Skipping devbox initialization.")
+                return False
+
             # Initialize devbox if needed
             devbox_json_path = os.path.join(project_directory, "devbox.json")
             if not os.path.exists(devbox_json_path):

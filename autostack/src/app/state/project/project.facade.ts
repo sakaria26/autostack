@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import { ProjectActions } from './project.actions';
-import * as ProjectSelectors from './project.selectors';
 import { ProjectResult } from '../../services/project/project-service';
 import { OperationsFacade } from '../operations/operations.facade';
+import { ProjectActions } from './project.actions';
+import * as ProjectSelectors from './project.selectors';
 
 @Injectable({
   providedIn: 'root',
@@ -185,6 +185,12 @@ export class ProjectFacade {
   loadProductionEnvironment(projectId: string): void {
     this.store.dispatch(
       ProjectActions.loadProductionEnvironment({ projectId })
+    );
+  }
+
+  generateProductionConfig(projectId: string): void {
+    this.store.dispatch(
+      ProjectActions.generateProductionConfig({ projectId })
     );
   }
 }

@@ -7,7 +7,7 @@ db = db.getSiblingDB('autostack');
 // Create a user for the autostack database
 db.createUser({
   user: 'adminmongo',
-  pwd: '^GRDPkH6x!bUqWPv',
+  pwd: 'password123',
   roles: [
     {
       role: 'readWrite',

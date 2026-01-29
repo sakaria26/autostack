@@ -49,7 +49,7 @@ class DockerfileGenerator:
             template = self.env.get_template(template_name)
             return template.render(**context)
         except Exception as e:
-            self.log_error(f"Error rendering Dockerfile template: {e}")
+            logger.error(f"Error rendering Dockerfile template: {e}")
             # Fallback to default template
             template = self.env.get_template("default.dockerfile.j2")
             return template.render(**context)
@@ -308,6 +308,13 @@ class ComponentService(BaseService):
     async def _add_devbox_packages(self, project_path: Path, packages: List[str]):
         """Add packages to devbox using devbox shell"""
         try:
+            # Check if devbox is available
+            try:
+                subprocess.run(["devbox", "version"], capture_output=True, check=True)
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                self.log_warning("devbox command not found. Skipping package addition.")
+                return False
+
             self.log_info(f"Adding devbox packages: {packages}")
             
             # Run devbox add synchronously within async context
@@ -326,19 +333,11 @@ class ComponentService(BaseService):
             commands = "devbox add " + " ".join(packages) + "\nexit\n"
             stdout, stderr = await asyncio.to_thread(process.communicate, commands)
 
-            result = subprocess.CompletedProcess(
-                args=["devbox", "shell"],
-                returncode=process.returncode,
-                stdout=stdout,
-                stderr=stderr
-            )
-            
-        
-            if result.returncode == 0:
+            if process.returncode == 0:
                 self.log_info("Devbox packages added successfully")
                 return True
             else:
-                self.log_error(f"Error adding devbox packages: {result.stderr}")
+                self.log_error(f"Error adding devbox packages: {stderr}")
                 return False
                 
         except Exception as e:
