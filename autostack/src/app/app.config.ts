@@ -51,7 +51,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideApollo(() => {
       const httpLink = inject(HttpLink);
-      const http = httpLink.create({ uri: 'http://localhost:8020/graphql' });
+      const http = httpLink.create({ uri: 'http://localhost:8000/graphql' });
 
       const ws = new GraphQLWsLink(
         createClient({
